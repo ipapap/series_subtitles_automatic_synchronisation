@@ -117,11 +117,11 @@ def load_subtitles(subtitle_file):
         
     return subtitle_intervals
 
-def get_subtitle_speech_intervals(subtitle_file, duration_limit=None):
+def get_subtitle_speech_intervals(subtitle_file, duration_limit=None,encoding='utf-8'):
     """
     Extract subtitle intervals where there is speech.
     """
-    subs = pysrt.open(subtitle_file)
+    subs = pysrt.open(subtitle_file, encoding=encoding)
     speech_intervals = []
     for sub in subs:
         start_seconds = sub.start.hours * 3600 + sub.start.minutes * 60 + sub.start.seconds + sub.start.milliseconds / 1000.0
@@ -177,9 +177,9 @@ def ransac_alignment(audio_speech, sub_speech):
     print(f"Number of inliers used by RANSAC: {inlier_count}")
     return shift_opt, scale_opt
 
-def sync(movie_filename, sub_filename, out_sub_name,duration_limit_minutes=None):
+def sync(movie_filename, sub_filename, out_sub_name,duration_limit_minutes=None,encoding='utf-8'):
     audio_speech = get_speech(movie_filename, duration_limit=duration_limit_minutes)
-    sub_speech = get_subtitle_speech_intervals(sub_filename, duration_limit=duration_limit_minutes)
+    sub_speech = get_subtitle_speech_intervals(sub_filename, duration_limit=duration_limit_minutes,encoding=encoding)
 
     # Use RANSAC to find the optimal shift and scale to minimize the difference between audio and subtitle speech
     shift_opt, scale_opt = ransac_alignment(audio_speech, sub_speech)
@@ -187,7 +187,7 @@ def sync(movie_filename, sub_filename, out_sub_name,duration_limit_minutes=None)
     if shift_opt is not None and scale_opt is not None:
         print(f"Optimal shift (RANSAC): {shift_opt}, Optimal scale (RANSAC): {scale_opt}")
         # Create a new subtitle file with the updated timestamps
-        create_new_subtitle_file(sub_filename, shift_opt, scale_opt, out_sub_name)
+        create_new_subtitle_file(sub_filename, shift_opt, scale_opt, out_sub_name,encoding)
     else:
         print("RANSAC failed to find a valid alignment.")
 

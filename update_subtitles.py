@@ -1,6 +1,6 @@
 import pysrt
 
-def create_new_subtitle_file(subtitle_file, shift, scale, output_file):
+def create_new_subtitle_file(subtitle_file, shift, scale, output_file,encoding='utf-8'):
     """
     Create a new subtitle file with updated timestamps based on shift and scale values.
     
@@ -11,7 +11,7 @@ def create_new_subtitle_file(subtitle_file, shift, scale, output_file):
         output_file (str): Path to save the new subtitle file.
     """
     # Load the original subtitle file
-    subs = pysrt.open(subtitle_file)
+    subs = pysrt.open(subtitle_file, encoding=encoding)
 
     # Apply the shift and scale to each subtitle's timestamps
     for sub in subs:
@@ -32,7 +32,7 @@ def create_new_subtitle_file(subtitle_file, shift, scale, output_file):
         sub.end.milliseconds = int((new_end_seconds - int(new_end_seconds)) * 1000)
 
     # Save the updated subtitles to the output file
-    subs.save(output_file, encoding='utf-8')
+    subs.save(output_file, encoding=encoding)#'utf-8')
 
 if __name__ == "__main__":
     # Example usage
